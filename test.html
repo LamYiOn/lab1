@@ -12,9 +12,9 @@
         li {
             font-size: 30px;
         }
-        .cat-1 { color: red; }      /* category 1: red text */
-        .cat-2 { color: black; }    /* category 2: black text */
-        .cat-3 { color: grey; }     /* category 3: grey text */
+        .cat-1 { color: red; }      
+        .cat-2 { color: blue; }    
+        .cat-3 { color: purple; }  
         .completed-task {
             text-decoration: line-through;
         }
@@ -24,7 +24,7 @@
     </style>
 </head>
 <body>
-    <textarea id='text' rows="3">Lecture preparation: cloud computing, 1; Dinner with Prof. Wong, 2; Walk my dog, 3; Lecture preparation: probability, 1</textarea> 
+    <textarea id='text' rows="3">Dinner, 1; Exercise, 2; Study, 3</textarea> 
     <br/>
     <div class='divButton'>
         <button id='btn_add'>Add</button>
@@ -73,7 +73,7 @@
                 li.classList.add(getCategoryClass(category));
                 li.dataset.completed = 'false';
 
-                // single click: toggle completed (strikethrough)
+                // single click: toggle completed (add/remove horizontal line)
                 li.addEventListener('click', function(e) {
                     // ignore if this is part of a double-click
                     if (e.detail === 2) return;
