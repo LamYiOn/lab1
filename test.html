@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List (core functions)</title>
+    <title>Todo List</title>
     <style>
-        /* minimal essential styles only */
         textarea {
             width: 100%;
         }
         li {
             font-size: 30px;
         }
-        .cat-1 { color: red; }      
-        .cat-2 { color: blue; }    
-        .cat-3 { color: purple; }  
+        .cat-1 { color: red; }
+        .cat-2 { color: blue; }
+        .cat-3 { color: purple; }
         .completed-task {
             text-decoration: line-through;
         }
@@ -24,9 +23,9 @@
     </style>
 </head>
 <body>
-    <textarea id='text' rows="3">Dinner, 1; Exercise, 2; Study, 3</textarea> 
+    <textarea id='text' rows="3">Lecture preparation: cloud computing, 1; Dinner with Prof. Wong, 2; Walk my dog, 3; Lecture preparation: probability, 1</textarea> 
     <br/>
-    <div class='divButton'>
+    <div>
         <button id='btn_add'>Add</button>
         <button id='btn_hide'>Toggle</button>
     </div>
@@ -41,16 +40,14 @@
             const toggleButton = document.getElementById('btn_hide');
             const orderList = document.getElementById('order_list');
 
-            // helper: get CSS class based on category
             function getCategoryClass(category) {
                 const cat = String(category).trim();
                 if (cat === '1') return 'cat-1';
                 if (cat === '2') return 'cat-2';
                 if (cat === '3') return 'cat-3';
-                return 'cat-2'; // fallback
+                return 'cat-2';
             }
 
-            // parse input string into array of { content, category }
             function parseTasks(inputStr) {
                 if (!inputStr) return [];
                 const items = inputStr.split(';').filter(s => s.trim() !== '');
@@ -66,16 +63,13 @@
                 return tasks;
             }
 
-            // create and add a single task <li> to the list
             function addTaskElement(content, category) {
                 const li = document.createElement('li');
                 li.textContent = content;
                 li.classList.add(getCategoryClass(category));
                 li.dataset.completed = 'false';
 
-                // single click: toggle completed (add/remove horizontal line)
                 li.addEventListener('click', function(e) {
-                    // ignore if this is part of a double-click
                     if (e.detail === 2) return;
                     
                     if (li.dataset.completed === 'true') {
@@ -87,7 +81,6 @@
                     }
                 });
 
-                // double click: delete with confirm
                 li.addEventListener('dblclick', function(e) {
                     e.stopPropagation();
                     if (confirm(`Delete "${content}"?`)) {
@@ -98,29 +91,23 @@
                 orderList.appendChild(li);
             }
 
-            // initial render from textarea default value
             function renderInitial() {
                 orderList.innerHTML = '';
                 const tasks = parseTasks(textarea.value);
                 tasks.forEach(t => addTaskElement(t.content, t.category));
             }
 
-            // add button: parse textarea and append new tasks (keep existing)
             function addTasks() {
                 const tasks = parseTasks(textarea.value);
                 tasks.forEach(t => addTaskElement(t.content, t.category));
             }
 
-            // toggle completed visibility
             function toggleHide() {
                 orderList.classList.toggle('hide-completed');
             }
 
-            // attach event listeners
             addButton.addEventListener('click', addTasks);
             toggleButton.addEventListener('click', toggleHide);
-
-            // start with demo tasks
             renderInitial();
         })();
     </script>
