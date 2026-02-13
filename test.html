@@ -3,526 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Todo List · Attention Manager</title>
+    <title>Todo List (core functions)</title>
     <style>
-        /* ----- beautiful, user-friendly UI (bonus spirit, no extra point needed) ----- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(145deg, #f9f7f5 0%, #f2efe9 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1.5rem;
-            margin: 0;
-            color: #2e2b27;
-        }
-
-        .todo-card {
-            max-width: 820px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.12), 0 5px 12px rgba(0, 0, 0, 0.05);
-            border-radius: 36px;
-            padding: 2rem 2rem 2.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            margin-top: 0;
-            margin-bottom: 0.2rem;
-            color: #3d3a36;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        h1 span {
-            background: #e8e1d7;
-            font-size: 1rem;
-            font-weight: 400;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            color: #4d4842;
-            letter-spacing: 0.3px;
-        }
-
-        .label-desc {
-            font-size: 0.85rem;
-            color: #6b625a;
-            margin-bottom: 8px;
-            margin-top: 16px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
+        /* minimal essential styles only */
         textarea {
             width: 100%;
-            border: none;
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 1.2rem 1.5rem;
-            font-size: 1rem;
-            line-height: 1.6;
-            border: 2px solid #e8e1da;
-            transition: all 0.2s ease;
-            font-family: 'Inter', monospace;
-            resize: vertical;
-            color: #2a2724;
-            font-weight: 400;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
         }
-
-        textarea:focus {
-            border-color: #b3a69a;
-            outline: none;
-            background: #fffdfb;
-            box-shadow: 0 0 0 4px rgba(179, 166, 154, 0.1);
+        li {
+            font-size: 30px;
         }
-
-        .divButton {
-            display: flex;
-            gap: 16px;
-            margin-top: 20px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: #ffffff;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 120px;
-            font-size: 1rem;
-            font-weight: 550;
-            color: #3e3a36;
-            border: 1.5px solid #dbd2c9;
-            background: white;
-            cursor: pointer;
-            transition: 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 3px rgba(0,0,0,0.02);
-            flex: 0 0 auto;
-            letter-spacing: 0.3px;
-        }
-
-        button:hover {
-            background: #f1ede8;
-            border-color: #b7aba0;
-            box-shadow: 0 7px 12px rgba(85, 75, 65, 0.06);
-        }
-
-        #btn_add {
-            background: #2b3a2b;
-            border-color: #1f2a1f;
-            color: white;
-            padding-left: 2.2rem;
-            padding-right: 2.2rem;
-        }
-
-        #btn_add:hover {
-            background: #3d4f3d;
-            border-color: #2f3e2f;
-        }
-
-        #btn_hide {
-            background: #f6f2ef;
-        }
-
-        /* --- ordered list style --- */
-        ol {
-            list-style: none;
-            counter-reset: todo-counter;
-            margin-top: 12px;
-            padding-left: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        ol li {
-            counter-increment: todo-counter;
-            font-size: 1.3rem;
-            padding: 0.9rem 1.2rem 0.9rem 2.8rem;
-            background: white;
-            border-radius: 60px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.02);
-            border: 1px solid #f0ebe6;
-            position: relative;
-            word-break: break-word;
-            transition: all 0.2s;
-            font-weight: 450;
-            line-height: 1.45;
-            color: #2b2825;
-        }
-
-        /* custom number (1.,2.,3.) */
-        ol li::before {
-            content: counter(todo-counter) ".";
-            position: absolute;
-            left: 1.1rem;
-            font-weight: 550;
-            color: #8d8279;
-            font-size: 1.2rem;
-        }
-
-        /* category colors: 
-           1 -> red (coral, friendly red), 
-           2 -> black (soft charcoal), 
-           3 -> grey (warm grey) 
-        */
-        .cat-1 {
-            background: #ffedea;
-            border-left: 10px solid #e95c4a;
-            color: #572b26;
-        }
-
-        .cat-2 {
-            background: #f6f4f2;
-            border-left: 10px solid #4b4a47;
-            color: #2d2c2a;
-        }
-
-        .cat-3 {
-            background: #f4f2f0;
-            border-left: 10px solid #b2aba4;
-            color: #4d4842;
-        }
-
-        /* completed tasks: strikethrough, softer look */
+        .cat-1 { color: red; }      /* category 1: red text */
+        .cat-2 { color: black; }    /* category 2: black text */
+        .cat-3 { color: grey; }     /* category 3: grey text */
         .completed-task {
             text-decoration: line-through;
-            opacity: 0.72;
-            background: #f1efed;
-            border-left-color: #b9b1a8;
-            color: #6c655e;
         }
-
-        /* hidden class for toggle – hide completed tasks */
         .hide-completed .completed-task {
-            display: none !important;
+            display: none;
         }
-
-        /* small note about double click delete */
-        .footer-hint {
-            margin-top: 28px;
-            font-size: 0.8rem;
-            color: #948c84;
-            border-top: 1px dashed #dad3cd;
-            padding-top: 1.2rem;
-            text-align: center;
-        }
-
-        .task-wrapper {
-            transition: all 0.1s;
-        }
-
     </style>
 </head>
 <body>
-    <div class="todo-card">
-        <h1>
-            🗂️ todo.txt 
-            <span>attention tool</span>
-        </h1>
-
-        <!-- Text area for tasks: default pre-filled example -->
-        <div class="label-desc">✏️ new task · format: task, category (1|2|3) — use ; to add multiple</div>
-        <textarea id='text' rows="4" >Lecture preparation: cloud computing, 1; Dinner with Prof. Wong, 2; Walk my dog, 3; Lecture preparation: probability, 1</textarea> 
-        
-        <div class='divButton'>
-            <button id='btn_add'>➕ Add</button>
-            <button id='btn_hide'>👁️ Toggle completed</button>
-        </div>
-
-        <!-- ordered list where tasks will appear -->
-        <ol id='order_list'>
-            <!-- initial demo tasks will be rendered via JS -->
-        </ol>	
-        <div class="footer-hint">
-            ⚡ single click → toggle done / strike · double click → delete task 
-        </div>
+    <textarea id='text' rows="3">Lecture preparation: cloud computing, 1; Dinner with Prof. Wong, 2; Walk my dog, 3; Lecture preparation: probability, 1</textarea> 
+    <br/>
+    <div class='divButton'>
+        <button id='btn_add'>Add</button>
+        <button id='btn_hide'>Toggle</button>
     </div>
 
-<script>
-    (function() {
-        "use strict";
+    <ol id='order_list'>
+    </ol>	
 
-        // ----- get DOM elements -----
-        const textarea = document.getElementById('text');
-        const addButton = document.getElementById('btn_add');
-        const toggleButton = document.getElementById('btn_hide');
-        const orderList = document.getElementById('order_list');
+    <script>
+        (function() {
+            const textarea = document.getElementById('text');
+            const addButton = document.getElementById('btn_add');
+            const toggleButton = document.getElementById('btn_hide');
+            const orderList = document.getElementById('order_list');
 
-        // ----- internal state & helpers -----
+            // helper: get CSS class based on category
+            function getCategoryClass(category) {
+                const cat = String(category).trim();
+                if (cat === '1') return 'cat-1';
+                if (cat === '2') return 'cat-2';
+                if (cat === '3') return 'cat-3';
+                return 'cat-2'; // fallback
+            }
 
-        // Color mapping: category -> CSS class 
-        function getCategoryClass(category) {
-            const cat = String(category).trim();
-            if (cat === '1') return 'cat-1';
-            if (cat === '2') return 'cat-2';
-            if (cat === '3') return 'cat-3';
-            return 'cat-2'; // fallback (black)
-        }
+            // parse input string into array of { content, category }
+            function parseTasks(inputStr) {
+                if (!inputStr) return [];
+                const items = inputStr.split(';').filter(s => s.trim() !== '');
+                const tasks = [];
+                for (let item of items) {
+                    const lastComma = item.lastIndexOf(',');
+                    if (lastComma === -1) continue;
+                    const content = item.substring(0, lastComma).trim();
+                    const category = item.substring(lastComma + 1).trim();
+                    if (content === '' || category === '') continue;
+                    tasks.push({ content, category });
+                }
+                return tasks;
+            }
 
-        // ----- parse input string and return array of { content, category } -----
-        function parseTasks(inputStr) {
-            if (!inputStr || typeof inputStr !== 'string') return [];
-            
-            // split by ';' 
-            const rawItems = inputStr.split(';').filter(item => item.trim() !== '');
-            const tasks = [];
+            // create and add a single task <li> to the list
+            function addTaskElement(content, category) {
+                const li = document.createElement('li');
+                li.textContent = content;
+                li.classList.add(getCategoryClass(category));
+                li.dataset.completed = 'false';
 
-            for (let item of rawItems) {
-                // find last comma to separate category
-                const lastCommaIndex = item.lastIndexOf(',');
-                if (lastCommaIndex === -1) continue;  // no comma -> skip malformed
-
-                let content = item.substring(0, lastCommaIndex).trim();
-                let category = item.substring(lastCommaIndex + 1).trim();
-
-                // clean: remove any surrounding quotes? not needed. just use raw.
-                if (content === '' || category === '') continue;
-                
-                tasks.push({
-                    content: content,
-                    category: category,
+                // single click: toggle completed (strikethrough)
+                li.addEventListener('click', function(e) {
+                    // ignore if this is part of a double-click
+                    if (e.detail === 2) return;
+                    
+                    if (li.dataset.completed === 'true') {
+                        li.classList.remove('completed-task');
+                        li.dataset.completed = 'false';
+                    } else {
+                        li.classList.add('completed-task');
+                        li.dataset.completed = 'true';
+                    }
                 });
+
+                // double click: delete with confirm
+                li.addEventListener('dblclick', function(e) {
+                    e.stopPropagation();
+                    if (confirm(`Delete "${content}"?`)) {
+                        li.remove();
+                    }
+                });
+
+                orderList.appendChild(li);
             }
-            return tasks;
-        }
 
-        // ----- add a single task item to DOM (append to ol) -----
-        function addTaskElement(taskContent, taskCategory) {
-            const li = document.createElement('li');
-            
-            // store content & category as data attributes (useful for double click / single)
-            li.dataset.content = taskContent;
-            li.dataset.category = taskCategory;
-            // completed state: false (default)
-            li.dataset.completed = 'false';
-            
-            // set the displayed text
-            li.textContent = taskContent;  // only content, category not shown as text
-            
-            // apply color based on category
-            const colorClass = getCategoryClass(taskCategory);
-            li.classList.add(colorClass);
-            
-            // add class for completed styling later (if completed)
-            // initially not completed
-            
-            // ---- EVENT: single click = toggle strike & completed status ----
-            li.addEventListener('click', function(e) {
-                // stop propagation to avoid double click trigger? we handle separately.
-                // but double click also fires single click. we prevent if detail = 2? 
-                // Standard: single click toggles strike. we'll use setTimeout trick? 
-                // simpler: let both run but double click will delete; we prevent single click after double? 
-                // use a small delay? To avoid conflict, we just implement both: 
-                // but requirement: single click toggles completed (strike), double click deletes.
-                // Since double click fires two single clicks before delete, we need to avoid toggling twice then delete.
-                // We will prevent single click event if the target is about to be deleted? 
-                // Clean solution: use event listener for double click and stop propagation? 
-                // We'll manage by setting a flag? Let's do robust: 
-                // On double click we directly remove. On single click we toggle. 
-                // To avoid toggling twice before double click, we use a short timer? risky.
-                // Better: distinguish via e.detail (click count) but cross-browser.
-                // Simpler: store click timeout. 
-                // we implement: if click count = 2 (double click) -> do nothing in single handler.
-                if (e.detail === 2) {
-                    return; // let double click handler work, skip toggle
-                }
-                // otherwise proceed with single click (toggle completed)
-                toggleCompleted(li);
-            });
-
-            // ---- EVENT: double click = delete with confirm (bonus but included, even though skip bonus, we add confirm for better UX) ----
-            li.addEventListener('dblclick', function(e) {
-                e.stopPropagation(); // avoid bubbling
-                // Confirm delete (1 bonus point, but we include as nice-to-have)
-                const confirmDelete = confirm(`Delete "${li.textContent}" ?`);
-                if (confirmDelete) {
-                    li.remove();  // remove from DOM
-                }
-            });
-
-            orderList.appendChild(li);
-        }
-
-        // ----- toggle completed state of a list item -----
-        function toggleCompleted(liElement) {
-            if (!liElement) return;
-            const isCompleted = liElement.dataset.completed === 'true';
-            if (isCompleted) {
-                // remove completed state (no strike)
-                liElement.classList.remove('completed-task');
-                liElement.dataset.completed = 'false';
-            } else {
-                // add completed state (strike line)
-                liElement.classList.add('completed-task');
-                liElement.dataset.completed = 'true';
+            // initial render from textarea default value
+            function renderInitial() {
+                orderList.innerHTML = '';
+                const tasks = parseTasks(textarea.value);
+                tasks.forEach(t => addTaskElement(t.content, t.category));
             }
-        }
 
-        // ----- refresh / reset: remove all tasks and reload from array (for initialization)-----
-        function renderInitialTasks() {
-            // clear existing tasks
-            orderList.innerHTML = '';
-            
-            // get example from textarea? but we want to load default tasks as per sample: 
-            // Actually default textarea already has nice sample. We parse it and add.
-            const defaultValue = textarea.value;
-            const tasks = parseTasks(defaultValue);
-            for (let t of tasks) {
-                addTaskElement(t.content, t.category);
+            // add button: parse textarea and append new tasks (keep existing)
+            function addTasks() {
+                const tasks = parseTasks(textarea.value);
+                tasks.forEach(t => addTaskElement(t.content, t.category));
             }
-        }
 
-        // ----- process ADD button: parse textarea and add new tasks (preserve old tasks) -----
-        function addTasksFromInput() {
-            const input = textarea.value;
-            const tasksToAdd = parseTasks(input);
-            
-            // if no valid tasks, do nothing (maybe feedback)
-            if (tasksToAdd.length === 0) {
-                alert('No valid tasks found. Use format: "task, 1" or separated by ;');
-                return;
+            // toggle completed visibility
+            function toggleHide() {
+                orderList.classList.toggle('hide-completed');
             }
-            
-            for (let t of tasksToAdd) {
-                addTaskElement(t.content, t.category);
-            }
-            
-            // optionally clear textarea? Not specified; keep content for convenience.
-            // we do NOT clear textarea, user may want to keep it. 
-            // but we can leave as is.
-        }
 
-        // ----- TOGGLE completed tasks: hide/show class toggling on <ol> parent -----
-        function toggleHideCompleted() {
-            // we manage by adding/removing class 'hide-completed' to orderList parent? 
-            // use on orderList itself to hide .completed-task elements
-            orderList.classList.toggle('hide-completed');
-            
-            // update button text subtle? not required but nice.
-            if (orderList.classList.contains('hide-completed')) {
-                toggleButton.innerHTML = '👁️ Show completed'; 
-            } else {
-                toggleButton.innerHTML = '👁️ Toggle completed'; 
-            }
-        }
+            // attach event listeners
+            addButton.addEventListener('click', addTasks);
+            toggleButton.addEventListener('click', toggleHide);
 
-        // ----- additional: load initial tasks from default textarea (example) -----
-        renderInitialTasks();
-
-        // ----- Attach event listeners -----
-        addButton.addEventListener('click', addTasksFromInput);
-        toggleButton.addEventListener('click', toggleHideCompleted);
-
-        // ----- (optional) ensure that the demo list show example items exactly as figure. 
-        // already parsed at start.
-
-        // BUT: if the user wants to start with the demo list, they see the pre-filled tasks in textarea and they are loaded.
-        // Also we need to support multiple add. Fine.
-
-        // ----- additional improvement: double click confirmation already inside li event.
-        // For newly added tasks, event listeners are attached at creation time.
-
-        // Category colors: 1 = red, 2 = black, 3 = grey. already done.
-        // We used border-left strong color, background subtle. Works.
-
-        // For safety, ensure that textarea example shows exactly the requested sample:
-        // The given code had "Dinner, 1; Exercise, 2; Study, 3". but we changed to richer.
-        // Override textarea value to match figure-like?
-        // The description: example "Lecture preparation: cloud computing, 1; Dinner with Prof. Wong, 2; Walk my dog, 3; ..."
-        // Already set in textarea default. good.
-
-        // also: we need to support task content includes commas? The rule: last comma separates category.
-        // Our parse uses lastIndexOf(','), so it's safe: "Lecture: cloud, computing, 1" will treat 'Lecture: cloud, computing' as content.
-        // That matches spec. Good.
-
-        // Also: double click to delete — works. 
-        // Single click to toggle strike — works.
-        // Toggle button: hide/show completed — works.
-
-        // Provide a more polished feel: 
-        // Let's add double click confirm. (Bonus but we include anyway)
-        // Already done.
-
-        // Email bonus not required. So skip.
-
-        // also: if a completed item is hidden, we still can double click? but hidden items cannot be clicked because display:none.
-        // So if completed tasks hidden, they are not visible nor clickable. That's fine. To delete hidden completed tasks, toggle show first.
-        // Standard behavior.
-
-        // ----- Additional minor: multiple line parse: we treat each chunk separated by ';' no matter newline. Works.
-
-        // We also need to ensure that 'toggle' button does not affect visibility of non-completed items.
-        // Using .hide-completed .completed-task { display: none; } — perfect.
-
-        // Let's also add style for li when completed: background a bit lighter.
-
-        // fix: toggling on li after hidden? when hide, we set class on ol. works.
-        // When we add new tasks, they don't have completed-task class initially, so hidden not applied.
-        // Fine.
-
-        // One nuance: default textarea had "Dinner, 1; Exercise, 2; Study, 3". but we changed. 
-        // But we want the initial list to match the example in figure? The figure includes: "Lecture preparation: cloud computing, 1", etc.
-        // So we set the textarea default as the given example, and render from it. Perfect.
-        // However the original skeleton had different default. I overrode it with the required example.
-        // That's okay.
-
-        // Reset textarea to exactly the example from requirement:
-        // Already done in HTML: value="Lecture preparation: cloud computing, 1; Dinner with Prof. Wong, 2; Walk my dog, 3; Lecture preparation: probability, 1"
-        // So we're consistent.
-
-        // Last check: double click removal confirmation: we used confirm(). 
-
-        // Edge: if a user double clicks very fast, single click toggles before double click. 
-        // Our single click handler checks e.detail === 2 and returns. So if double click, first click (detail=1) will toggle, second click (detail=1?) Actually during double click, the first click e.detail=1, second click e.detail=2. Our condition returns if e.detail===2, so second click won't toggle. So only one toggle happens then the double click event fires (which we listen separately). That's ok. Might toggle then delete. Acceptable. 
-        // Alternatively, we could prevent but it's fine.
-
-        // Also we added dataset.content / dataset.category for possible extension but not necessary for core.
-
-        // All good.
-
-        // Ensure that add tasks from textarea: we parse and add without removing existing tasks. 
-        // That's requirement: "Add multiple items by taking input separated by ';' ... click ADD, then 4 items ... will be added as shown"
-        // So we keep existing and append.
-
-        // UI looks clean, rounded, soft.
-
-        // small fix: toggling completed on an item: if it's hidden and we show again, the class toggling works.
-
-        // Set default toggle button text at start.
-        // done.
-    })();
-</script>
-
-<!-- 
-    all requirements covered:
-    1. online accessibility – when deployed (github pages, etc)
-    2. add item with <task>, <category> ; color: 1 red, 2 black, 3 grey.
-    3. add multiple by semicolon ; 
-    4. double click delete (confirm dialog included)
-    5. single click toggle strike / resume
-    6. toggle button hide/show completed
-    bonus points skipped but confirm window included (1 bonus) and beautiful UI (1 bonus) but not required.
--->
+            // start with demo tasks
+            renderInitial();
+        })();
+    </script>
 </body>
 </html>
