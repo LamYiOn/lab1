@@ -23,6 +23,7 @@
     </style>
 </head>
 <body>
+    <!-- To add new tasks: type in the textarea, e.g., "New task, 1; Another task, 2" then click Add -->
     <textarea id='text' rows="3">Dinner, 1; Exercise, 2; Study, 3</textarea> 
     <br/>
     <div>
@@ -99,7 +100,14 @@
 
             function addTasks() {
                 const tasks = parseTasks(textarea.value);
+                if (tasks.length === 0) {
+                    alert('Please enter tasks in format: "task, category" (separate multiple with ;)');
+                    return;
+                }
                 tasks.forEach(t => addTaskElement(t.content, t.category));
+                
+                // Optional: clear textarea after adding
+                // textarea.value = '';
             }
 
             function toggleHide() {
